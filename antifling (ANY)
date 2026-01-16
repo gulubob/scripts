@@ -1,0 +1,60 @@
+--script made by gulubob on tiktok, discord ang github, unkn0wn_c0rpx3 on roblox--
+
+--I DIDNT USE CHATGPT TO MAKE THIS I PUT COMMENTS FOR SCRIPT MODDERS--
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local StarterGui = game:GetService("StarterGui")
+
+-- notification
+StarterGui:SetCore("SendNotification", {
+    Title = "antifling";
+    Text = "antifling executed";
+    Duration = 5;
+})
+
+local localPlayer = Players.LocalPlayer
+local trackedPlayers = {}
+
+local function disableCanCollide(part)
+    if part:IsA("BasePart") and part.CanCollide then
+        part.CanCollide = false
+    end
+end
+
+local function trackCharacter(character)
+    for _, part in pairs(character:GetDescendants()) do
+        disableCanCollide(part)
+    end
+    character.DescendantAdded:Connect(disableCanCollide)
+end
+
+local function trackPlayer(player)
+    if player == localPlayer then return end
+    if player.Character then
+        trackCharacter(player.Character)
+    end
+    player.CharacterAdded:Connect(trackCharacter)
+    trackedPlayers[player] = true
+end
+
+for _, player in pairs(Players:GetPlayers()) do
+    trackPlayer(player)
+end
+
+Players.PlayerAdded:Connect(trackPlayer)
+Players.PlayerRemoving:Connect(function(player)
+    trackedPlayers[player] = nil
+end)
+
+-- continuously force disabling CanCollide on all tracked players characters every frame
+RunService.RenderStepped:Connect(function()
+    for player, _ in pairs(trackedPlayers) do
+        local character = player.Character
+        if character then
+            for _, part in pairs(character:GetDescendants()) do
+                disableCanCollide(part)
+            end
+        end
+    end
+end)
