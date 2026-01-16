@@ -1,0 +1,120 @@
+--made by unkn0wn_c0rpx3 on roblox, gulubob on tiktok and discord--
+--if you wanna mod this, please give me credits--
+--AND NO THIS WAS NOT MADE BY CHATGPT I ADDED NOTES FOR SCRIPT MODDERS--
+
+-- Instances:
+local ScriptLoaded = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local TextLabel = Instance.new("TextLabel")
+local UICorner = Instance.new("UICorner")
+local UICorner_2 = Instance.new("UICorner")
+
+--Properties:
+ScriptLoaded.Name = "Script-Loaded!"
+ScriptLoaded.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScriptLoaded.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+Frame.Parent = ScriptLoaded
+Frame.BackgroundColor3 = Color3.fromRGB(66, 0, 79)
+Frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+Frame.BorderSizePixel = 0
+Frame.Position = UDim2.new(0.320835561, 0, 0.331352144, 0)
+Frame.Size = UDim2.new(0, 355, 0, 106)
+
+TextLabel.Parent = Frame
+TextLabel.BackgroundColor3 = Color3.fromRGB(107, 0, 126)
+TextLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextLabel.BorderSizePixel = 0
+TextLabel.Position = UDim2.new(0.0210222267, 0, 0.0816158056, 0)
+TextLabel.Size = UDim2.new(0, 347, 0, 97)
+TextLabel.Font = Enum.Font.FredokaOne
+TextLabel.Text = "Script loaded!"
+TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel.TextScaled = true
+TextLabel.TextSize = 14.000
+TextLabel.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel.TextWrapped = true
+
+UICorner.Parent = TextLabel
+UICorner_2.Parent = Frame
+
+-- remove gui after 3 seconds
+task.delay(3, function()
+	if ScriptLoaded then
+		ScriptLoaded:Destroy()
+	end
+end)
+
+--------------------------------
+-- End of GUI / Start of Script
+--------------------------------
+
+-- keybind
+local invisKey = Enum.KeyCode.E
+
+-- state
+local invis_on = false
+
+-- services
+local player = game.Players.LocalPlayer
+local uis = game:GetService("UserInputService")
+
+-- helper functions
+local function setTransparency(character, transparency)
+	for _, part in pairs(character:GetDescendants()) do
+		if part:IsA("BasePart") or part:IsA("Decal") then
+			part.Transparency = transparency
+		end
+	end
+end
+
+local function toggleInvisibility()
+	local character = player.Character
+	if not character or not character:FindFirstChild("HumanoidRootPart") then return end
+
+	invis_on = not invis_on
+
+	if invis_on then
+		local savedpos = character.HumanoidRootPart.CFrame
+		task.wait()
+
+		character:MoveTo(Vector3.new(-25.95, 84, 3537.55))
+		task.wait(0.15)
+
+		local seat = Instance.new("Seat", workspace)
+		seat.Name = "invischair"
+		seat.Anchored = false
+		seat.CanCollide = false
+		seat.Transparency = 1
+		seat.Position = Vector3.new(-25.95, 84, 3537.55)
+
+		local weld = Instance.new("Weld", seat)
+		weld.Part0 = seat
+		weld.Part1 = character:FindFirstChild("Torso") or character:FindFirstChild("UpperTorso")
+
+		task.wait()
+		seat.CFrame = savedpos
+		setTransparency(character, 0.5)
+	else
+		local chair = workspace:FindFirstChild("invischair")
+		if chair then
+			chair:Destroy()
+		end
+		setTransparency(character, 0)
+	end
+end
+
+-- key input
+uis.InputBegan:Connect(function(input, gp)
+	if gp then return end
+	if input.KeyCode == invisKey then
+		toggleInvisibility()
+	end
+end)
+
+-- track character respawn
+player.CharacterAdded:Connect(function(character)
+	invis_on = false
+	task.wait(1) -- wait for character to exist
+end)
+
