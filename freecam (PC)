@@ -1,5 +1,7 @@
 --if you wanna mod this, atleast give me credits--
 
+--I DIDNT USE CHATGPT TO MAKE THIS, I PUT COMMENTS FOR SCRIPT MODDERS--
+
 local player = game.Players.LocalPlayer
 local cam = workspace.CurrentCamera
 local uis = game:GetService("UserInputService")
